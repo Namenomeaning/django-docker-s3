@@ -4,5 +4,6 @@ django-storages==1.13.2
 gunicorn==20.1.0
 Pillow==9.4.0
 psycopg2-binary==2.9.5
-cryptography 
+cryptography
+pymemcache==4.0.0 
 
