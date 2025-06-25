@@ -1,0 +1,110 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Products - Django E-Commerce{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="columns">
+            <!-- Sidebar with categories -->
+            <div class="column is-3">
+                <aside class="menu">
+                    <p class="menu-label">Categories</p>
+                    <ul class="menu-list">
+                        <li>
+                            <a href="{% url 'shop:product_list' %}" 
+                               class="{% if not category %}is-active{% endif %}">
+                                All Products
+                            </a>
+                        </li>
+                        {% for c in categories %}
+                            <li>
+                                <a href="{{ c.get_absolute_url }}" 
+                                   class="{% if category.slug == c.slug %}is-active{% endif %}">
+                                    {{ c.name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </aside>
+            </div>
+
+            <!-- Products grid -->
+            <div class="column is-9">
+                <div class="level">
+                    <div class="level-left">
+                        <div class="level-item">
+                            <h1 class="title">
+                                {% if category %}{{ category.name }}{% else %}All Products{% endif %}
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="level-right">
+                        <div class="level-item">
+                            <span class="tag is-light">{{ products.count }} product{{ products.count|pluralize }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {% if category.description %}
+                    <div class="content">
+                        <p>{{ category.description }}</p>
+                    </div>
+                {% endif %}
+
+                <div class="columns is-multiline">
+                    {% for product in products %}
+                        <div class="column is-4">
+                            <div class="card">
+                                {% if product.image %}
+                                    <div class="card-image">
+                                        <figure class="image is-4by3">
+                                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                                        </figure>
+                                    </div>
+                                {% endif %}
+                                <div class="card-content">
+                                    <div class="media">
+                                        <div class="media-content">
+                                            <p class="title is-5">{{ product.name }}</p>
+                                            <p class="subtitle is-6">${{ product.price }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="content">
+                                        {{ product.description|truncatewords:20 }}
+                                    </div>
+                                </div>
+                                <footer class="card-footer">
+                                    <a href="{{ product.get_absolute_url }}" class="card-footer-item">
+                                        View Details
+                                    </a>
+                                    {% if product.stock > 0 %}
+                                        <form action="{% url 'shop:cart_add' product.id %}" method="post" style="display: inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="card-footer-item button is-primary is-outlined">
+                                                Add to Cart
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <span class="card-footer-item has-text-danger">Out of Stock</span>
+                                    {% endif %}
+                                </footer>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="column">
+                            <div class="notification is-info">
+                                <p class="has-text-centered">
+                                    <i class="fas fa-info-circle"></i>&nbsp;
+                                    No products available at the moment.
+                                </p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

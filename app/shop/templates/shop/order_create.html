@@ -1,0 +1,140 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Checkout - Django E-Commerce{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="title">Checkout</h1>
+
+        <div class="columns">
+            <div class="column is-8">
+                <div class="box">
+                    <h2 class="subtitle">Shipping Information</h2>
+                    <form action="{% url 'shop:order_create' %}" method="post">
+                        {% csrf_token %}
+                        <div class="columns">
+                            <div class="column">
+                                <div class="field">
+                                    <label class="label">{{ form.first_name.label_tag }}</label>
+                                    <div class="control">
+                                        {{ form.first_name }}
+                                    </div>
+                                    {% if form.first_name.errors %}
+                                        <p class="help is-danger">{{ form.first_name.errors }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="field">
+                                    <label class="label">{{ form.last_name.label_tag }}</label>
+                                    <div class="control">
+                                        {{ form.last_name }}
+                                    </div>
+                                    {% if form.last_name.errors %}
+                                        <p class="help is-danger">{{ form.last_name.errors }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">{{ form.email.label_tag }}</label>
+                            <div class="control">
+                                {{ form.email }}
+                            </div>
+                            {% if form.email.errors %}
+                                <p class="help is-danger">{{ form.email.errors }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="field">
+                            <label class="label">{{ form.address.label_tag }}</label>
+                            <div class="control">
+                                {{ form.address }}
+                            </div>
+                            {% if form.address.errors %}
+                                <p class="help is-danger">{{ form.address.errors }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="columns">
+                            <div class="column">
+                                <div class="field">
+                                    <label class="label">{{ form.postal_code.label_tag }}</label>
+                                    <div class="control">
+                                        {{ form.postal_code }}
+                                    </div>
+                                    {% if form.postal_code.errors %}
+                                        <p class="help is-danger">{{ form.postal_code.errors }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="field">
+                                    <label class="label">{{ form.city.label_tag }}</label>
+                                    <div class="control">
+                                        {{ form.city }}
+                                    </div>
+                                    {% if form.city.errors %}
+                                        <p class="help is-danger">{{ form.city.errors }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <button type="submit" class="button is-primary">
+                                    <i class="fas fa-credit-card"></i>&nbsp;Place Order
+                                </button>
+                            </div>
+                            <div class="control">
+                                <a href="{% url 'shop:cart_detail' %}" class="button is-light">
+                                    <i class="fas fa-arrow-left"></i>&nbsp;Back to Cart
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="column is-4">
+                <div class="box">
+                    <h2 class="subtitle">Order Summary</h2>
+                    {% for item in cart.items.all %}
+                        <div class="level is-mobile">
+                            <div class="level-left">
+                                <div class="level-item">
+                                    <div>
+                                        <p class="heading">{{ item.product.name }}</p>
+                                        <p class="title is-6">{{ item.quantity }} × ${{ item.product.price }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="level-right">
+                                <div class="level-item">
+                                    <p class="title is-6">${{ item.get_cost }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <hr>
+                    <div class="level is-mobile">
+                        <div class="level-left">
+                            <div class="level-item">
+                                <p class="title is-5">Total:</p>
+                            </div>
+                        </div>
+                        <div class="level-right">
+                            <div class="level-item">
+                                <p class="title is-5 has-text-primary">${{ cart.get_total_price }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

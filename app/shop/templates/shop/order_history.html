@@ -1,0 +1,79 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Order History - Django E-Commerce{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="title">Order History</h1>
+
+        {% if orders %}
+            {% for order in orders %}
+                <div class="box">
+                    <div class="level">
+                        <div class="level-left">
+                            <div class="level-item">
+                                <div>
+                                    <p class="title is-5">Order #{{ order.id }}</p>
+                                    <p class="subtitle is-6">{{ order.created_at|date:"F d, Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="level-right">
+                            <div class="level-item">
+                                <div class="tags has-addons">
+                                    <span class="tag">Status</span>
+                                    <span class="tag {% if order.status == 'delivered' %}is-success{% elif order.status == 'shipped' %}is-info{% elif order.status == 'processing' %}is-warning{% elif order.status == 'cancelled' %}is-danger{% else %}is-light{% endif %}">
+                                        {{ order.get_status_display }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="columns">
+                        <div class="column is-8">
+                            <h4 class="title is-6">Items:</h4>
+                            {% for item in order.items.all %}
+                                <div class="level is-mobile">
+                                    <div class="level-left">
+                                        <div class="level-item">
+                                            <p>{{ item.quantity }} × {{ item.product.name }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="level-right">
+                                        <div class="level-item">
+                                            <p>${{ item.get_cost }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="column is-4">
+                            <div class="box has-background-light">
+                                <p><strong>Shipping Address:</strong></p>
+                                <p>{{ order.first_name }} {{ order.last_name }}</p>
+                                <p>{{ order.address }}</p>
+                                <p>{{ order.city }}, {{ order.postal_code }}</p>
+                                <hr>
+                                <p class="title is-5 has-text-primary">Total: ${{ order.get_total_cost }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="notification is-info">
+                <div class="has-text-centered">
+                    <i class="fas fa-history fa-3x mb-3"></i>
+                    <p class="title is-4">No orders yet</p>
+                    <p class="subtitle">You haven't placed any orders. Start shopping to see your order history!</p>
+                    <a href="{% url 'shop:product_list' %}" class="button is-primary">
+                        <i class="fas fa-shopping-bag"></i>&nbsp;Start Shopping
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

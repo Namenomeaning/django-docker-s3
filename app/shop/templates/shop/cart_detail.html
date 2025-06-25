@@ -1,0 +1,92 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Shopping Cart - Django E-Commerce{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="title">Shopping Cart</h1>
+
+        {% if cart.items.all %}
+            <div class="box">
+                <table class="table is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart.items.all %}
+                            <tr>
+                                <td>
+                                    <div class="media">
+                                        <div class="media-left">
+                                            {% if item.product.image %}
+                                                <figure class="image is-64x64">
+                                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                                                </figure>
+                                            {% endif %}
+                                        </div>
+                                        <div class="media-content">
+                                            <p class="title is-6">
+                                                <a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a>
+                                            </p>
+                                            <p class="subtitle is-7">{{ item.product.category.name }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>${{ item.product.price }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td><strong>${{ item.get_cost }}</strong></td>
+                                <td>
+                                    <form action="{% url 'shop:cart_remove' item.product.id %}" method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="button is-small is-danger is-outlined">
+                                            <i class="fas fa-trash"></i>&nbsp;Remove
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3">Total:</th>
+                            <th>${{ cart.get_total_price }}</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="field is-grouped">
+                <div class="control">
+                    <a href="{% url 'shop:product_list' %}" class="button is-light">
+                        <i class="fas fa-arrow-left"></i>&nbsp;Continue Shopping
+                    </a>
+                </div>
+                <div class="control">
+                    <a href="{% url 'shop:order_create' %}" class="button is-primary">
+                        <i class="fas fa-credit-card"></i>&nbsp;Proceed to Checkout
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="notification is-info">
+                <div class="has-text-centered">
+                    <i class="fas fa-shopping-cart fa-3x mb-3"></i>
+                    <p class="title is-4">Your cart is empty</p>
+                    <p class="subtitle">Add some products to get started!</p>
+                    <a href="{% url 'shop:product_list' %}" class="button is-primary">
+                        <i class="fas fa-shopping-bag"></i>&nbsp;Start Shopping
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

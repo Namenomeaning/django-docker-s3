@@ -1,0 +1,103 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}{{ product.name }} - Django E-Commerce{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <nav class="breadcrumb">
+            <ul>
+                <li><a href="{% url 'shop:product_list' %}">Home</a></li>
+                <li><a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a></li>
+                <li class="is-active"><a href="#" aria-current="page">{{ product.name }}</a></li>
+            </ul>
+        </nav>
+
+        <div class="columns">
+            <div class="column is-6">
+                {% if product.image %}
+                    <figure class="image">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    </figure>
+                {% else %}
+                    <figure class="image is-square">
+                        <div class="has-background-grey-lighter has-text-grey has-text-centered" style="height: 100%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-image fa-3x"></i>
+                        </div>
+                    </figure>
+                {% endif %}
+            </div>
+
+            <div class="column is-6">
+                <h1 class="title is-2">{{ product.name }}</h1>
+                <p class="subtitle is-4 has-text-primary">${{ product.price }}</p>
+
+                <div class="content">
+                    <p>{{ product.description|linebreaks }}</p>
+                </div>
+
+                <div class="field">
+                    <label class="label">Category:</label>
+                    <div class="control">
+                        <a href="{{ product.category.get_absolute_url }}" class="tag is-primary">
+                            {{ product.category.name }}
+                        </a>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Stock:</label>
+                    <div class="control">
+                        {% if product.stock > 0 %}
+                            <span class="tag is-success">{{ product.stock }} available</span>
+                        {% else %}
+                            <span class="tag is-danger">Out of stock</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if product.stock > 0 %}
+                    <form action="{% url 'shop:cart_add' product.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="field has-addons">
+                            <div class="control">
+                                <div class="select">
+                                    <select name="quantity">
+                                        {% for i in "123456789"|make_list %}
+                                            {% if forloop.counter <= product.stock %}
+                                                <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="control">
+                                <button type="submit" class="button is-primary">
+                                    <i class="fas fa-cart-plus"></i>&nbsp;Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                {% else %}
+                    <button class="button is-danger" disabled>
+                        <i class="fas fa-exclamation-triangle"></i>&nbsp;Out of Stock
+                    </button>
+                {% endif %}
+
+                <div class="field is-grouped mt-4">
+                    <div class="control">
+                        <a href="{% url 'shop:product_list' %}" class="button is-light">
+                            <i class="fas fa-arrow-left"></i>&nbsp;Back to Products
+                        </a>
+                    </div>
+                    <div class="control">
+                        <a href="{{ product.category.get_absolute_url }}" class="button is-light">
+                            More from {{ product.category.name }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

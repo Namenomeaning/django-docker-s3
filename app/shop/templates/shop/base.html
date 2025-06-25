@@ -1,0 +1,119 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}Django E-Commerce{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'bulma.min.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar is-primary" role="navigation">
+        <div class="container">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="{% url 'shop:product_list' %}">
+                    <strong>Django Shop</strong>
+                </a>
+                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+            </div>
+
+            <div id="navbarBasicExample" class="navbar-menu">
+                <div class="navbar-start">
+                    <a class="navbar-item" href="{% url 'shop:product_list' %}">
+                        <i class="fas fa-home"></i>&nbsp;Home
+                    </a>
+                    {% if user.is_authenticated %}
+                        <a class="navbar-item" href="{% url 'shop:order_history' %}">
+                            <i class="fas fa-history"></i>&nbsp;My Orders
+                        </a>
+                    {% endif %}
+                </div>
+
+                <div class="navbar-end">
+                    <div class="navbar-item">
+                        <div class="buttons">
+                            <a class="button is-light" href="{% url 'shop:cart_detail' %}">
+                                <i class="fas fa-shopping-cart"></i>&nbsp;
+                                Cart
+                                {% if cart.get_total_items %}
+                                    <span class="tag is-primary is-rounded ml-1">{{ cart.get_total_items }}</span>
+                                {% endif %}
+                            </a>
+                            {% if user.is_authenticated %}
+                                <a class="button is-light" href="{% url 'admin:logout' %}">
+                                    <i class="fas fa-sign-out-alt"></i>&nbsp;Logout
+                                </a>
+                            {% else %}
+                                <a class="button is-light" href="{% url 'admin:login' %}">
+                                    <i class="fas fa-sign-in-alt"></i>&nbsp;Login
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <section class="section py-3">
+            <div class="container">
+                {% for message in messages %}
+                    <div class="notification {% if message.tags == 'error' %}is-danger{% elif message.tags == 'success' %}is-success{% elif message.tags == 'warning' %}is-warning{% else %}is-info{% endif %}">
+                        <button class="delete"></button>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <p>
+                <strong>Django E-Commerce</strong> built with Django and Bulma CSS.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Burger menu toggle
+        document.addEventListener('DOMContentLoaded', () => {
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+            if ($navbarBurgers.length > 0) {
+                $navbarBurgers.forEach(el => {
+                    el.addEventListener('click', () => {
+                        const target = el.dataset.target;
+                        const $target = document.getElementById(target);
+                        el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+                    });
+                });
+            }
+
+            // Delete notification
+            (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+                const $notification = $delete.parentNode;
+                $delete.addEventListener('click', () => {
+                    $notification.parentNode.removeChild($notification);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
