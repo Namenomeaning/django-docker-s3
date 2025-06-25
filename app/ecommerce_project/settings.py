@@ -148,6 +148,16 @@ if USE_S3:
     PRIVATE_FILE_STORAGE = 'ecommerce_project.storage_backends.PrivateMediaStorage'
 
     AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN', 'd1uuxdau45c18v.cloudfront.net')
+    
+    AWS_CLOUDFRONT_KEY_ID = os.getenv('AWS_CLOUDFRONT_KEY_ID', '').strip()
+    
+    # Handle multiline CloudFront private key
+    cloudfront_key = os.getenv('AWS_CLOUDFRONT_KEY', '')
+    if cloudfront_key:
+        # Replace \n with actual newlines and strip whitespace
+        AWS_CLOUDFRONT_KEY = cloudfront_key.replace('\\n', '\n').strip().encode('ascii')
+    else:
+        AWS_CLOUDFRONT_KEY = None
 else:
     STATIC_URL = '/staticfiles/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
